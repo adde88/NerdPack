@@ -29,3 +29,7 @@ end)
 NeP.DSL:Register("honortalent", function(_, args)
   return select(10, _G.GetPvpTalentInfoByID(honor_talents[args], _G.GetActiveSpecGroup()))
 end)
+
+NeP.DSL:Register("pvp", function(target)
+  return _G.UnitIsPVP(target, 'PLAYER')
+end)

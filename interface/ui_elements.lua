@@ -146,6 +146,9 @@ function NeP.Interface:Combo(element, parent, table)
 	NeP.Core:WhenInGame(function()
 		tmp:SetValue(NeP.Interface:Fetch(table.key, element.key, element.default))
 	end)
+	--Settings
+	tmp.settings.width = element.width or tmp.settings.width
+	tmp:ApplySettings()
 	return tmp
 end
 
