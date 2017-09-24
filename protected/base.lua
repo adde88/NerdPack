@@ -26,6 +26,8 @@ NeP.Protected.UseInvItem = noop
 NeP.Protected.TargetUnit = noop
 NeP.Protected.SpellStopCasting = noop
 NeP.Protected.ObjectExists = noop
+NeP.Protected.ObjectCreator = noop
+NeP.Protected.GameObjectIsAnimating = noop
 
 NeP.Protected.Distance = function(_, b)
   local minRange, maxRange = rangeCheck:GetRange(b)
