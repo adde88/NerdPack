@@ -27,11 +27,17 @@ end
 
 --Returns if we're casting/channeling anything, its remaning time and name
 --Also used by the parser for (!spell) if order to figure out if we should clip
-local function castingTime()
-	local time = _G.GetTime()
+-- t.master.endtime, t.master.cname, t.master.time, t.master.channeling
+local function castingTime(tbl)
+	tbl.time = _G.GetTime()
+	tbl.channeling = nil
 	local name, _,_,_,_, endTime = _G.UnitCastingInfo("player")
-	if not name then name, _,_,_,_, endTime = _G.UnitChannelInfo("player") end
-	return (name and (endTime/1000)-time) or 0, name
+	if not name then
+		name, _,_,_,_, endTime = _G.UnitChannelInfo("player")
+		tbl.channeling = true
+	end
+	tbl.endtime = (name and (endTime/1000)-tbl.time) or 0
+	tbl.cname = name
 end
 
 local function _interrupt(eval)
@@ -151,7 +157,10 @@ function NeP.Parser:Parse(eval, nest_unit)
 	if eval[1].is_table then
 		return self:Target_P(eval, self.Nest_P, nest_unit)
 	-- Normal
-	elseif (eval[1].bypass or eval.master.endtime == 0) then
+	elseif eval[1].bypass
+	or eval.nogcd
+	and eval.master.channeling
+	or eval.master.endtime == 0 then
 		eval.stats = NeP.Actions:Eval(eval[1].token)(eval)
 		-- POOLING PARSER
 		if eval.master.pooling then
@@ -173,14 +182,13 @@ local function ParseStart()
 		NeP:Wipe_Cache()
 		NeP.DBM.BuildTimers()
 		if NeP.Queuer:Execute() then return end
-		local table = c.CR and c.CR[_G.InCombatLockdown()]
-		if not table then return end
-		table.master.endtime, table.master.cname = castingTime()
-		table.master.time = _G.GetTime()
-		table.master.halt = false
-		for i=1, #table do
+		local t = c.CR and c.CR[_G.InCombatLockdown()]
+		if not t then return end
+		castingTime(t.master)
+		t.master.halt = false
+		for i=1, #t do
 			--print("TABLE ============================", i)
-			if NeP.Parser:Parse(table[i]) then break end
+			if NeP.Parser:Parse(t[i]) then break end
 		end
 	end
 end

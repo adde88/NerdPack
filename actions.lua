@@ -31,8 +31,7 @@ NeP.Compiler:RegisterToken("!", function(_, ref)
 end)
 
 -- No GCD
-NeP.Compiler:RegisterToken("&", function(eval, ref)
-    ref.bypass = true
+NeP.Compiler:RegisterToken("&", function(eval)
     eval.nogcd = true
 end)
 
@@ -70,7 +69,6 @@ end)
 -- Executes a users macro
 NeP.Compiler:RegisterToken("/", function(eval, ref)
   ref.token = 'macro'
-  eval.nogcd = true
   eval.exe = funcs["Macro"]
 end)
 
@@ -86,7 +84,6 @@ end)
 -- Executes a users lib
 NeP.Compiler:RegisterToken("@", function(eval, ref)
   ref.token = 'lib'
-  eval.nogcd = true
   eval.exe = funcs["Lib"]
 end)
 
@@ -127,8 +124,8 @@ NeP.Actions:Add('ressdead', function(eval)
   if not IsSpellReady(eval[1].args) then return end
   for _, Obj in pairs(NeP.OM:Get('Friendly')) do
     if Obj.distance < 40
-    and _G.UnitExists(Obj.Key)
-    and _G.UnitIsPlayer(Obj.Key)
+    and _G.UnitExists(Obj.key)
+    and _G.UnitIsPlayer(Obj.key)
     and _G.UnitIsDeadOrGhost(Obj.key)
     and _G.UnitPlayerOrPetInParty(Obj.key) then
       eval.spell = eval[1].args
