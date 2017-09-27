@@ -9,6 +9,14 @@ NeP.DSL:Register('group.members', function()
   return (_G.GetNumGroupMembers() or 0)
 end)
 
+-- USAGE: group.type==#
+-- * 3 = RAID
+-- * 2 = Party
+-- * 1 = SOLO
+NeP.DSL:Register('group.type', function()
+  return _G.IsInRaid() and 3 or _G.IsInGroup() and 2 or 1
+end)
+
 local UnitClsf = {
   ['elite'] = 2,
   ['rareelite'] = 3,

@@ -17,5 +17,6 @@
 	<Script file="fakeunits.lua" />
 	<Script file="actions.lua" />
 	<Script file="misc.lua" />
+	<Script file="deprecated.lua" />
 
 </Ui>
