@@ -1,6 +1,7 @@
 local _, NeP = ...
 local _G = _G
 local DSL = NeP.DSL
+local strsplit = _G.strsplit
 
 local function FilterNum(str)
 	local type_X = type(str)
@@ -20,7 +21,8 @@ local comperatores_OP = {
 	['=='] = function(arg1, arg2) return arg1 == arg2 end,
 	['~='] = function(arg1, arg2) return arg1 ~= arg2 end,
 	['>']  = function(arg1, arg2) return arg1 > arg2 end,
-	['<']  = function(arg1, arg2) return arg1 < arg2 end
+	['<']  = function(arg1, arg2) return arg1 < arg2 end,
+	['::']  = function(arg1, arg2) local a,b = strsplit(',', arg2); return arg1 > a and arg1 < b end
 }
 
 -- alias (LEGACY)
@@ -84,32 +86,23 @@ end
 local C = NeP.Cache.Conditions
 
 local function ProcessCondition(Strg, Spell, Target)
+	local str_no_arg = Strg:gsub("%((.+)%)", "")
 	-- Unit prefix
-	if not NeP.DSL:Exists(Strg:gsub("%((.+)%)", "")) then
-		local unitID, rest = _G.strsplit('.', Strg, 2)
-		unitID =  NeP.FakeUnits:Filter(unitID)[1]
-		-- condition Target
-		if unitID and _G.UnitExists(unitID) then
-			Target = unitID
-			Strg = rest
-		else
-			--escape early if the unit dosent exist
-			return false
-		end
+	if not NeP.DSL:Exists(str_no_arg) then
+		Target, Strg = _G.strsplit('.', Strg, 2)
 	end
 	-- Condition arguments
 	local Args = Strg:match("%((.+)%)") or Spell
-	Strg = Strg:gsub("%((.+)%)", "")
-	Target = Target or 'player'
-
+	Strg = str_no_arg
+	Target = NeP.FakeUnits:Filter(Target)[1]
+	-- Escape if Unit Dosent Exist
+	if not _G.UnitExists(Target) then return false end
+	--Build Cache
 	C[Strg] = C[Strg] or {}
 	C[Strg][Target] = C[Strg][Target] or {}
-
-	--cacched
 	if C[Strg][Target][Args] == nil then
-		C[Strg][Target][Args] = DSL:Get(Strg)(Target, Args) or false
+		C[Strg][Target][Args] = DSL:Get(Strg)(Target, Args) or Strg or false
 	end
-
 	return C[Strg][Target][Args]
 end
 
@@ -161,11 +154,12 @@ function NeP.DSL.Parse(Strg, Spell, Target)
 		Strg = Strg:sub(6);
 		return ExeFunc(Strg)
 	-- != needs to be seperate otherwise we end up with false positives
-	elseif Strg:find('[><=~]') or Strg:find('!=') then
+	elseif Strg:find('[><=~]')
+	or Strg:find('!=') then
 		return Comperatores(Strg, Spell, Target)
 	elseif Strg:find("[/%*%+%-]") then
 		return StringMath(Strg, Spell, Target)
-	elseif Strg:find('%a') then
+	elseif Strg:find('^%a') then
 		return ProcessCondition(Strg, Spell, Target)
 	end
 	return Strg
