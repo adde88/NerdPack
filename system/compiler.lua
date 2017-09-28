@@ -74,7 +74,7 @@ function NeP.Compiler.Spell(eval)
 	end
 end
 
-local function unit_ground(ref, eval)
+local function unit_ground(eval, ref)
 	if ref.target:find('.ground') then
 		ref.target = ref.target:sub(0,-8)
 		NeP.Core:WhenInGame(function()
