@@ -4,6 +4,7 @@ local tonumber = tonumber
 local noop = function() end
 local cond_types = {}
 local spell_types = {}
+local target_types = {}
 local tokens = {}
 
 -- DO NOT USE THIS UNLESS YOU KNOW WHAT YOUR DOING!
