@@ -1,8 +1,9 @@
 local _, NeP = ...
+NeP.Compiler = {}
 local tonumber = tonumber
 local noop = function() end
 local cond_types = {}
-NeP.Compiler = {}
+local spell_types = {}
 local tokens = {}
 
 -- DO NOT USE THIS UNLESS YOU KNOW WHAT YOUR DOING!
@@ -36,27 +37,30 @@ local function spell_string(eval)
 	eval[1] = ref
 end
 
-local _spell_types = {
-	['table'] = function(eval)
-		eval[1].is_table = true
-		eval[1].master = eval.master
-		eval[1].spell = "TABLEZZ"
-		NeP.Compiler.Compile(eval[1])
-	end,
-	['function'] = function(eval)
-		local ref = {}
-		ref.token = 'function'
-		ref.spell = tostring(eval[1])
-		eval.exe = eval[1]
-		eval.nogcd = true
-		eval[1] = ref
-	end,
-	['string'] = spell_string
-}
+local function spell_table(eval)
+	eval[1].is_table = true
+	eval[1].master = eval.master
+	eval[1].spell = "TABLEZZ"
+	NeP.Compiler.Compile(eval[1])
+end
+
+local function spell_func(eval)
+	local ref = {}
+	ref.token = 'function'
+	ref.spell = tostring(eval[1])
+	eval.exe = eval[1]
+	eval.nogcd = true
+	eval[1] = ref
+end
+
+-- Set Spells
+spell_types['table'] = spell_table
+spell_types['function'] = spell_func
+spell_types['string'] = spell_string
 
 -- Takes a valid format for spell and produces a table in its place
 function NeP.Compiler.Spell(eval)
-	local spell_type = _spell_types[type(eval[1])]
+	local spell_type = spell_types[type(eval[1])]
 	if spell_type then
 		spell_type(eval)
 	else
@@ -85,21 +89,20 @@ local function unit_ground(ref, eval)
 	end
 end
 
-local _target_types = {
-	['nil'] = noop,
-	['table'] = noop,
-	['function'] = noop,
-	['string'] = function(eval, ref) unit_ground(ref, eval) end
-}
+-- Set Targets
+target_types['nil'] = noop
+target_types['table'] = noop
+target_types['function'] = noop
+target_types['string'] = unit_ground
 
 function NeP.Compiler.Target(eval)
-	local ref, unit_type = {}, _target_types[type(eval[3])]
+	local ref, unit_type = {}, target_types[type(eval[3])]
 	if unit_type then
 		ref.target = eval[3]
 		unit_type(eval, ref)
 	else
 		NeP.Core:Print('Found a issue compiling: ', eval.master.name, '\n-> Target cant be a', type(eval[3]))
-		_target_types['nil'](eval, ref)
+		target_types['nil'](eval, ref)
 	end
 	eval[3] = ref
 end
