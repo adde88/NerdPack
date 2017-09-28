@@ -1,9 +1,8 @@
 local _, NeP = ...
 local tonumber = tonumber
 local noop = function() end
-
+local cond_types = {}
 NeP.Compiler = {}
-
 local tokens = {}
 
 -- DO NOT USE THIS UNLESS YOU KNOW WHAT YOUR DOING!
@@ -86,7 +85,6 @@ local function unit_ground(ref, eval)
 	end
 end
 
-
 local _target_types = {
 	['nil'] = noop,
 	['table'] = noop,
@@ -128,15 +126,7 @@ local function CondFunc(eval)
 	return 'func='..func
 end
 
-local cond_types = {
-	['nil'] = function() return 'true' end,
-	['function'] = CondFunc,
-	['boolean'] = tostring,
-	['string'] = function(eval, name) return CondSpellLocale(CondSpaces(eval), name)end,
-	['table'] = NeP.Compiler.Cond_Legacy_PE
-}
-
-function NeP.Compiler.Cond_Legacy_PE(cond, name)
+local function Cond_Legacy_PE(cond, name)
 	local str = '{'
 	for k=1, #cond do
 		local tmp = cond[k]
@@ -157,6 +147,12 @@ function NeP.Compiler.Cond_Legacy_PE(cond, name)
 	end
 	return cond_types['string'](str..'}', name)
 end
+
+cond_types['nil'] = function() return 'true' end
+cond_types['function'] = CondFunc
+cond_types['boolean'] = tostring
+cond_types['string'] = function(eval, name) return CondSpellLocale(CondSpaces(eval), name) end
+cond_types['table'] = Cond_Legacy_PE
 
 function NeP.Compiler.Conditions(eval)
 	local cond = cond_types[type(eval[2])]
