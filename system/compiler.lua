@@ -123,9 +123,9 @@ local function CondSpellLocale(str, cr_name)
 end
 
 local function CondFunc(eval)
-	local _func_name = tostring(eval)
-	_G[_func_name] = eval
-	return 'func='.._func_name
+	local func = tostring(eval)
+	NeP.DSL.cust_funcs[func] = eval
+	return 'func='..func
 end
 
 local _cond_types = {

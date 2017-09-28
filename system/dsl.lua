@@ -2,6 +2,7 @@ local _, NeP = ...
 local _G = _G
 local DSL = NeP.DSL
 local strsplit = _G.strsplit
+DSL.cust_funcs = {}
 
 local function FilterNum(str)
 	local type_X = type(str)
@@ -45,7 +46,7 @@ local function _AND(strg, spell, target)
 	local Arg1, Arg2 = strg:match('(.*)&(.*)')
 	Arg1 = DSL.Parse(Arg1, spell, target)
 	-- Dont process anything in front sence we already failed
-	if not Arg1 then return false end
+	if not Arg1 then return Arg1 end
 	Arg2 = DSL.Parse(Arg2, spell, target)
 	return Arg1 and Arg2
 end
@@ -54,7 +55,7 @@ local function _OR(strg, spell, target)
 	local Arg1, Arg2 = strg:match('(.*)||(.*)')
 	Arg1 = DSL.Parse(Arg1, spell)
 	-- Dont process anything in front sence we already hit
-	if Arg1 then return true end
+	if Arg1 then return Arg1 end
 	Arg2 = DSL.Parse(Arg2, spell, target)
 	return Arg1 or Arg2
 end
@@ -146,8 +147,8 @@ end
 
 local function ExeFunc(strg)
 	local Args = strg:match('%((.+)%)')
-	if Args then strg = strg:gsub('%((.+)%)', '') end
-	return _G[strg](Args)
+	strg = strg:gsub('%((.+)%)', '')
+	return DSL.cust_funcs[strg](Args)
 end
 
 function NeP.DSL.Parse(strg, spell, target)
