@@ -114,66 +114,60 @@ local function CondSpaces(cond)
 	end):gsub("%s", ""):gsub("_xspc_", " ")
 end
 
-function NeP.Compiler.Cond_Legacy_PE(cond)
-	local str = '{'
-	for k=1, #cond do
-		local tmp, tmp_type = cond[k], type(cond[k])
-		if not tmp then
-			str = 'true'
-		elseif tmp_type == 'table' then
-			str = NeP.Compiler.Cond_Legacy_PE(cond)
-		elseif tmp_type == 'boolean' then
-			str = tostring(tmp):lower()
-		elseif tmp_type == 'function' then
-			-- FIXME: this shouldnt go to globals we need a table with these
-			local name = tostring(tmp)
-			_G[name] = tmp
-			str = 'func='..name
-		elseif tmp:lower() == 'or' then
-			str = str .. '||' .. tmp
-		elseif k ~= 1 then
-			str = str .. '&' .. tmp
-		else
-			str = str .. tmp
-		end
-	end
-	return str..'}'
-end
-
 local _cond_types = {
-	['nil'] = function(eval)
-		eval[2] = 'true'
+	['nil'] = function()
+		return 'true'
 	end,
 	['function'] = function(eval)
-		local _func_name = tostring(eval[2])
-		_G[_func_name] = eval[2]
-		eval[2] = 'func='.._func_name
+		local _func_name = tostring(eval)
+		_G[_func_name] = eval
+		return 'func='.._func_name
 	end,
 	['boolean'] = function(eval)
-		eval[2] = tostring(eval[2])
+		return tostring(eval)
 	end,
 	['string'] = function(eval)
 		-- Convert spells inside () and remove spaces
-		eval[2] = CondSpaces(eval[2]):gsub("%((.-)%)", function(s)
+		return CondSpaces(eval):gsub("%((.-)%)", function(s)
 			-- we cant convert numbers due to it messing up other things
 			if tonumber(s) then return '('..s..')' end
 			return '('..NeP.Spells:Convert(s, eval.master.name)..')'
 		end)
 	end,
 	['table'] = function(eval)
-		-- convert everything into a string so we can then process it
-		eval[2] = NeP.Compiler.Cond_Legacy_PE(eval[2])
-		NeP.Compiler.Conditions(eval)
+		return NeP.Compiler.Cond_Legacy_PE(eval)
   end
 }
+
+function NeP.Compiler.Cond_Legacy_PE(cond)
+	local str = '{'
+	for k=1, #cond do
+		local tmp = cond[k]
+		local xtype = type(tmp)
+		--string
+		if xtype == "string" then
+			if tmp:lower() == 'or' then
+				str = str .. '||' .. tmp
+			elseif k ~= 1 then
+				str = str .. '&' .. tmp
+			else
+				str = str .. tmp
+			end
+		-- Others
+		else
+			str = str .. '&' .. _cond_types[xtype](tmp)
+		end
+	end
+	return str..'}'
+end
 
 function NeP.Compiler.Conditions(eval)
 	local cond_type = _cond_types[type(eval[2])]
 	if cond_type then
-		cond_type(eval)
+		eval[2] = cond_type(eval[2])
 	else
 		NeP.Core:Print('Found a issue compiling: ', eval.master.name, '\n-> Condition cant be a', type(eval[2]))
-		_cond_types['nil'](eval)
+		eval[2] = _cond_types['nil']()
 	end
 end
 
