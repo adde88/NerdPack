@@ -128,7 +128,7 @@ local function CondFunc(eval)
 	return 'func='..func
 end
 
-local _cond_types = {
+local cond_types = {
 	['nil'] = function() return 'true' end,
 	['function'] = CondFunc,
 	['boolean'] = tostring,
@@ -136,7 +136,7 @@ local _cond_types = {
 	['table'] = NeP.Compiler.Cond_Legacy_PE
 }
 
-function NeP.Compiler.Cond_Legacy_PE(cond)
+function NeP.Compiler.Cond_Legacy_PE(cond, name)
 	local str = '{'
 	for k=1, #cond do
 		local tmp = cond[k]
@@ -152,19 +152,19 @@ function NeP.Compiler.Cond_Legacy_PE(cond)
 			end
 		-- Others
 		else
-			str = str .. '&' .. _cond_types[xtype](tmp)
+			str = str .. '&' .. cond_types[xtype](tmp)
 		end
 	end
-	return str..'}'
+	return cond_types['string'](str..'}', name)
 end
 
 function NeP.Compiler.Conditions(eval)
-	local cond_type = _cond_types[type(eval[2])]
-	if cond_type then
-		eval[2] = cond_type(eval[2], eval.master.name)
+	local cond = cond_types[type(eval[2])]
+	if cond then
+		eval[2] = cond(eval[2], eval.master.name)
 	else
 		NeP.Core:Print('Found a issue compiling: ', eval.master.name, '\n-> Condition cant be a', type(eval[2]))
-		eval[2] = _cond_types['nil']()
+		eval[2] = cond_types['nil']()
 	end
 end
 
