@@ -14,11 +14,9 @@ end
 
 local function spell_string(eval)
 	local ref = { spell = eval[1] }
-
 	--Arguments
 	ref.args = ref.spell:match('%((.+)%)')
 	ref.spell = ref.spell:gsub('%((.+)%)','')
-
 	NeP.Core:WhenInGame(function()
 		-- RegisterToken
 		local token = ref.spell:sub(1,1)
@@ -27,13 +25,11 @@ local function spell_string(eval)
 			tokens[token](eval, ref)
 			token = ref.spell:sub(1,1)
 		end
-
 		-- spell
 		if not eval.exe then
 			tokens["spell_cast"](eval, ref)
 		end
 	end, 99999)
-
 	--replace with compiled
 	eval[1] = ref
 end
@@ -42,7 +38,7 @@ local function spell_table(eval)
 	eval[1].is_table = true
 	eval[1].master = eval.master
 	eval[1].spell = "TABLEZZ"
-	NeP.Compiler.Compile(eval[1])
+	NeP.Compiler:Compile(eval[1])
 end
 
 local function spell_func(eval)
@@ -168,20 +164,20 @@ function NeP.Compiler.Conditions(eval)
 	end
 end
 
-function NeP.Compiler.Compile(eval)
+function NeP.Compiler:Compile(eval)
 	for i=1, #eval do
 		-- check if this was already done
 		if not eval[i][4] then
 			eval[i][4] = true
 			eval[i].master = eval.master
-			NeP.Compiler.Spell(eval[i])
-			NeP.Compiler.Target(eval[i])
-			NeP.Compiler.Conditions(eval[i])
+			self.Spell(eval[i])
+			self.Target(eval[i])
+			self.Conditions(eval[i])
 		end
 	end
 end
 
 function NeP.Compiler.Iterate(_, eval)
 	if not eval then return end
-	NeP.Compiler.Compile(eval)
+	NeP.Compiler:Compile(eval)
 end
