@@ -3,23 +3,19 @@ local _, NeP = ...
 NeP.Commands:Register('nep', nil, 'nep', 'nerdpack')
 
 NeP.Commands:Add('nep', 'mastertoggle', function(rest)
-	rest = rest == 'on' or false
-	NeP.Interface:toggleToggle('MasterToggle', rest)
+	NeP.Interface:toggleToggle('MasterToggle', rest == 'on')
 end)
 
 NeP.Commands:Add('nep', 'aoe', function(rest)
-	rest = rest == 'on' or false
-	NeP.Interface:toggleToggle('AoE', rest)
+	NeP.Interface:toggleToggle('AoE', rest == 'on')
 end)
 
 NeP.Commands:Add('nep', 'cooldowns', function(rest)
-	rest = rest == 'on' or false
-	NeP.Interface:toggleToggle('Cooldowns', rest)
+	NeP.Interface:toggleToggle('Cooldowns', rest == 'on')
 end)
 
 NeP.Commands:Add('nep', 'interrupts', function(rest)
-	rest = rest == 'on' or false
-	NeP.Interface:toggleToggle('Interrupts', rest)
+	NeP.Interface:toggleToggle('Interrupts', rest == 'on')
 end)
 
 NeP.Commands:Add('nep', 'version', function() NeP.Core:Print(NeP.Version) end)
