@@ -114,29 +114,26 @@ local function CondSpaces(cond)
 	end):gsub("%s", ""):gsub("_xspc_", " ")
 end
 
+local function CondSpellLocale(str, cr_name)
+	return str:gsub("%((.-)%)", function(s)
+		-- we cant convert numbers due to it messing up other things
+		if tonumber(s) then return '('..s..')' end
+		return '('..NeP.Spells:Convert(s, cr_name)..')'
+	end)
+end
+
+local function CondFunc(eval)
+	local _func_name = tostring(eval)
+	_G[_func_name] = eval
+	return 'func='.._func_name
+end
+
 local _cond_types = {
-	['nil'] = function()
-		return 'true'
-	end,
-	['function'] = function(eval)
-		local _func_name = tostring(eval)
-		_G[_func_name] = eval
-		return 'func='.._func_name
-	end,
-	['boolean'] = function(eval)
-		return tostring(eval)
-	end,
-	['string'] = function(eval)
-		-- Convert spells inside () and remove spaces
-		return CondSpaces(eval):gsub("%((.-)%)", function(s)
-			-- we cant convert numbers due to it messing up other things
-			if tonumber(s) then return '('..s..')' end
-			return '('..NeP.Spells:Convert(s, eval.master.name)..')'
-		end)
-	end,
-	['table'] = function(eval)
-		return NeP.Compiler.Cond_Legacy_PE(eval)
-  end
+	['nil'] = function() return 'true' end,
+	['function'] = CondFunc,
+	['boolean'] = tostring,
+	['string'] = function(eval, name) return CondSpellLocale(CondSpaces(eval), name)end,
+	['table'] = NeP.Compiler.Cond_Legacy_PE
 }
 
 function NeP.Compiler.Cond_Legacy_PE(cond)
@@ -164,7 +161,7 @@ end
 function NeP.Compiler.Conditions(eval)
 	local cond_type = _cond_types[type(eval[2])]
 	if cond_type then
-		eval[2] = cond_type(eval[2])
+		eval[2] = cond_type(eval[2], eval.master.name)
 	else
 		NeP.Core:Print('Found a issue compiling: ', eval.master.name, '\n-> Condition cant be a', type(eval[2]))
 		eval[2] = _cond_types['nil']()

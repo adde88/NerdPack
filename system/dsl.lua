@@ -37,7 +37,7 @@ local math_OP = {
 }
 
 local DSL_OP = {
-	['!']  = function(arg1, arg2, target) return not DSL.Parse(arg1, arg2, target) end,
+	['!']  = function(...) return not DSL.Parse(...) end,
 	['@']  = function(arg,_,target) return NeP.Library:Parse(arg:gsub('%((.+)%)', ''), target, arg:match('%((.+)%)')) end,
 }
 
