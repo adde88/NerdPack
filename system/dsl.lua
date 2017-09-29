@@ -109,8 +109,6 @@ local function ProcessCondition(strg, spell, target)
 
 	C[strg] = C[strg] or {}
 	C[strg][target] = C[strg][target] or {}
-
-	--cacched
 	if C[strg][target][Args] == nil then
 		C[strg][target][Args] = DSL:Get(strg)(target, Args) or false
 	end
