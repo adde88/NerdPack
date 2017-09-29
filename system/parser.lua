@@ -94,10 +94,12 @@ function NeP.Parser:Target_P(eval, func, nest_unit)
 	local tmp_target = eval[3].target or nest_unit or noob_target
 	tmp_target = NeP.FakeUnits:Filter(tmp_target)
 	for i=1, #tmp_target do
-		--print("TARGET ===", i)
 		eval.target = tmp_target[i]
-		nest_unit = eval.target
-		if func(self, eval, nest_unit) then return true end
+		--print("TARGET ===", i)
+		if self:Target(eval) then
+			nest_unit = eval.target
+			if func(self, eval, nest_unit) then return true end
+		end
 	end
 end
 
@@ -113,7 +115,6 @@ end
 
 -- POOLING PARSER (TARGET->COND->SPELL)
 function NeP.Parser:Pool_P(eval)
-	if not self:Target(eval) then return end
 	eval.spell = eval.spell or eval[1].spell
 	local dsl_res = NeP.DSL.Parse(eval[2], eval.spell, eval.target)
 	--dont wait for spells that failed Conditions
@@ -124,23 +125,28 @@ function NeP.Parser:Pool_P(eval)
 		NeP.ActionLog:Add(">>> POOLING", eval.master.halt_spell)
 		--print(">>>>>> waiting for", eval.master.halt_spell)
 		return true
-	end
 	-- Sanity CHecks
-	if eval.stats
+	elseif eval.stats
 	and not eval.master.halt
 	and dsl_res then
-		return NeP.Parser:Reg_P(eval, nil, true)
+		return NeP.Parser:Reg_P(eval, nil, true, true)
 	end
 end
 
 --REGULAR PARSER (SPELL->TARGET->COND)
-function NeP.Parser:Reg_P(eval, _, bypass_dsl)
-	if not self:Target(eval) then return end
-	eval.spell = eval.spell or eval[1].spell
+function NeP.Parser:Reg_P(eval, _, bypass_dsl, bypass_target)
+	
+	-- skip if comming from pooling
+	if not bypass_target 
+	and not bypass_dsl then
+		eval.spell = eval.spell or eval[1].spell
+		if not NeP.DSL.Parse(eval[2], eval.spell, eval.target) then
+			return false
+		end
+	end
 	--print(eval.spell, bypass_dsl, NeP.DSL.Parse(eval[2], eval.spell, eval.target))
 	--check everything
-	if (bypass_dsl or NeP.DSL.Parse(eval[2], eval.spell, eval.target))
-	and NeP.Helpers:Check(eval.spell, eval.target)
+	if NeP.Helpers:Check(eval.spell, eval.target)
 	and _interrupt(eval) then
 		--print(">>> HIT")
 		NeP.ActionLog:Add(eval[1].token, eval.spell or "", eval[1].icon, eval.target)
@@ -175,12 +181,12 @@ end
 
 local function ParseStart()
 	NeP.Faceroll:Hide()
+	NeP:Wipe_Cache()
+	NeP.DBM.BuildTimers()
 	if NeP.DSL:Get('toggle')(nil, 'mastertoggle')
 	and not _G.UnitIsDeadOrGhost('player')
 	and IsMountedCheck()
 	and not _G.LootFrame:IsShown() then
-		NeP:Wipe_Cache()
-		NeP.DBM.BuildTimers()
 		if NeP.Queuer:Execute() then return end
 		local t = c.CR and c.CR[_G.InCombatLockdown()]
 		if not t then return end
@@ -196,5 +202,12 @@ end
 -- Delay until everything is ready
 NeP.Core:WhenInGame(function()
 _G.C_Timer.NewTicker(0.1, ParseStart)
-NeP.Debug:Add("Parser", ParseStart, true)
+NeP.Debug:Add("Parser0", ParseStart, false)
+NeP.Debug:Add("Parser1", NeP.Parser.Parse, false)
+NeP.Debug:Add("Parser2", NeP.Parser.Reg_P, false)
+NeP.Debug:Add("Parser3", NeP.Parser.Pool_P, false)
+NeP.Debug:Add("Parser4", NeP.Parser.Nest_P, false)
+NeP.Debug:Add("Parser5", NeP.Parser.Target_P, false)
+NeP.Debug:Add("Parser6", NeP.DSL.Parse, true)
+NeP.Debug:Add("Parser7", NeP.FakeUnits.Filter, true)
 end, -99)
