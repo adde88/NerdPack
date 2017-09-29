@@ -1,10 +1,7 @@
 local _, NeP = ...
 local onEvent = _G.onEvent
 local CreateFrame = _G.CreateFrame
-
 NeP.Listener = {}
-NeP.Globals.Listener = NeP.Listener
-
 local listeners = {}
 
 local frame = CreateFrame('Frame', 'NeP_Events')

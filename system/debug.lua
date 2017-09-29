@@ -49,7 +49,3 @@ _G.C_Timer.NewTicker(1, function()
 end, nil)
 
 end
-
-NeP.Globals.Debug = {
-	Add =  NeP.Debug.Add
-}

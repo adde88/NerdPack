@@ -131,9 +131,3 @@ NeP.Debug:Add("OM_Maker", MakerStart, true)
 
 _G.C_Timer.NewTicker(0.5, CleanStart)
 _G.C_Timer.NewTicker(1, MakerStart)
-
--- Gobals
-NeP.Globals.OM = {
-	Add = NeP.OM.Add,
-	Get = NeP.OM.Get,
-}

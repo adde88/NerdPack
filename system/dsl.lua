@@ -173,9 +173,3 @@ function NeP.DSL.Parse(strg, spell, target)
 	end
 	return strg
 end
-
-NeP.Globals.DSL = {
-	Get = NeP.DSL.Get,
-	Register = NeP.DSL.Register,
-	Parse = NeP.DSL.Parse
-}

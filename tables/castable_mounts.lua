@@ -36,10 +36,3 @@ NeP.ByPassMounts:Add({
 	221671, --storms-reach-warbear
 	221886 -- Divine Steed
 })
-
---Export to global
-NeP.Globals.ByPassMounts = {
-  Add = NeP.ByPassMounts.Add,
-  Eval = NeP.ByPassMounts.Eval,
-  Get = NeP.ByPassMounts.Get
-}

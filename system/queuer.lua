@@ -35,5 +35,3 @@ function NeP.Queuer:Execute()
     end
   end
 end
-
-NeP.Globals.Queue = NeP.Queuer.Add

@@ -160,7 +160,3 @@ function NeP.Interface.toggleToggle(_, key, state)
 	tmp:SetChecked(tmp.actv)
 	NeP.Config:Write('TOGGLE_STATES', tmp.key, tmp.actv)
 end
-
--- Globals
-NeP.Globals.Interface.toggleToggle = NeP.Interface.toggleToggle
-NeP.Globals.Interface.AddToggle = NeP.Interface.AddToggle

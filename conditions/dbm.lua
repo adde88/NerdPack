@@ -18,6 +18,3 @@ end
 NeP.DSL:Register('dbm', function(_, event)
   return NeP.Cache.DBM_Timers[event:lower()] or fake_timer
 end)
-
---Export to globals
-NeP.Globals.DBM = NeP.DBM

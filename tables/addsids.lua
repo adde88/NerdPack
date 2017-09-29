@@ -69,10 +69,3 @@ NeP.AddsID:Add({
 	95656	,	-- Carrion Swarm (HFC)
 	91540	,	-- Illusionary Outcast (HFC)
 })
-
---Export to global
-NeP.Globals.AddsID = {
-  Add = NeP.AddsID.Add,
-  Eval = NeP.AddsID.Eval,
-  Get = NeP.AddsID.Get
-}

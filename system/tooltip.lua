@@ -1,9 +1,6 @@
 local _, NeP = ...
 local _G = _G
-
 NeP.Tooltip = {}
-NeP.Globals.Tooltip = NeP.Tooltip
-
 local frame = _G.CreateFrame('GameTooltip', 'NeP_ScanningTooltip', _G.UIParent, 'GameTooltipTemplate')
 
 local function pPattern(text, pattern)

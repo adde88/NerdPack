@@ -74,10 +74,3 @@ NeP.Debuffs:Add({
 	182055,     -- Full Charge (Iron Reaver)
 	184053,     -- Fel Barrier (Socrethar)
 })
-
---Export to global
-NeP.Globals.Debuffs = {
-  Add = NeP.Debuffs.Add,
-  Eval = NeP.Debuffs.Eval,
-  Get = NeP.Debuffs.Get
-}

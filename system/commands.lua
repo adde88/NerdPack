@@ -26,5 +26,3 @@ function NeP.Commands:Register(name, func, ...)
 		self.cache[name] = {}
 	end
 end
-
-NeP.Globals.RegisterCommand = NeP.Commands.Register

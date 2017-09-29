@@ -97,5 +97,3 @@ NeP.Listener:Add("NeP_CR_interface", "PLAYER_SPECIALIZATION_CHANGED", function(u
 	if unitID ~= 'player' then return end
 	NeP.Interface:ResetCRs()
 end)
-
-NeP.Globals.Interface.Add = NeP.Interface.Add

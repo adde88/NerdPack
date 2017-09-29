@@ -115,5 +115,3 @@ NeP.Protected.OM_Maker = function()
 		end
 	end
 end
-
-NeP.Globals.Protected = NeP.Protected

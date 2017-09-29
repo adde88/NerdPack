@@ -337,6 +337,3 @@ function NeP.ClassTable:GetRole(specid)
 	local spec = self:GetSpec(specid)
 	return spec.role
 end
-
---Export to global
-NeP.Globals.ClassTable = NeP.ClassTable

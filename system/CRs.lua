@@ -129,9 +129,3 @@ NeP.Listener:Add("NeP_CR", "PLAYER_SPECIALIZATION_CHANGED", function(unitID)
 	if unitID ~= 'player' then return end
 	NeP.CR:Set()
 end)
-
---Globals
-NeP.Globals.CR = {
-	Add = NeP.CR.Add,
-	GetList = NeP.CR.GetList
-}

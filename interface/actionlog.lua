@@ -124,8 +124,3 @@ end
 NeP.Listener:Add('NeP_AL','PLAYER_REGEN_DISABLED', function()
 	_G.wipe(Data)
 end)
-
---Export global
-NeP.Globals.ActionLog = {
-	Add = NeP.ActionLog.Add,
-}

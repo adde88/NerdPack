@@ -62,10 +62,3 @@ NeP.BossID:Add({
   [104528] = true, -- High Botanist Tel'arn
   [103685] = true, -- Tichondrius
 })
-
---Export to global
-NeP.Globals.BossID = {
-  Add = NeP.BossID.Add,
-  Eval = NeP.BossID.Eval,
-  Get = NeP.BossID.Get
-}
