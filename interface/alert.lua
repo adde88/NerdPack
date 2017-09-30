@@ -24,7 +24,7 @@ local function fade(self)
   end
 end
 
---/run NeP.Interface:Alert("Hello World", 5)
+--/run NeP.Interface:Alert("Hello World")
 function NeP.Interface.Alert(_, txt, time)
   time = time or 5
 	frame.text:SetText(txt)

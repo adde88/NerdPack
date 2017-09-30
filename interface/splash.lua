@@ -36,6 +36,7 @@ local function SpecIcon()
   return select(4,GetSpecializationInfo(currentSpec))
 end
 
+--/run NeP.Interface:Splash("Hello World")
 function NeP.Interface.Splash(_, txt, icon, time)
   icon = icon or SpecIcon()
   time = time or 5
