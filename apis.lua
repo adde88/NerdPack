@@ -41,7 +41,8 @@ g.Interface = {
 	GetElement = NeP.Interface.GetElement,
 	Add = NeP.Interface.Add,
 	toggleToggle = NeP.Interface.toggleToggle,
-	AddToggle = NeP.Interface.AddToggle
+	AddToggle = NeP.Interface.AddToggle,
+	Alert = NeP.Interface.Alert
 }
 g.ActionLog = {
 	Add = NeP.ActionLog.Add,
