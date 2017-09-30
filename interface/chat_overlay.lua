@@ -1,8 +1,6 @@
 local _, NeP = ...
-local GetTime = _G.GetTime
 local CreateFrame = _G.CreateFrame
 local ChatFrame1 = _G.ChatFrame1
-local callTime, time = 0, 0
 local C_Timer = _G.C_Timer
 
 -- create the frame
@@ -17,21 +15,21 @@ frame.texture:SetColorTexture(0,0,0,.50)
 frame:Hide()
 
 local function fade(self)
-  if GetTime()-callTime>=time then
-    local Alpha = frame:GetAlpha()
-    frame:SetAlpha(Alpha-.01)
-    if Alpha<=0 then
-      frame:Hide()
-      self:Cancel()
-    end
+  local Alpha = frame:GetAlpha()
+  frame:SetAlpha(Alpha-.01)
+  if Alpha<=0 then
+    frame:Hide()
+    self:Cancel()
+    print("killed")
   end
 end
 
---/run NeP.Interface:Alert("Hello World")
-function NeP.Interface.Alert(_, txt)
-		frame.text:SetText(txt)
-    frame:SetHeight(frame.text:GetHeight())
-		frame:SetAlpha(1)
-		frame:Show()
-    C_Timer.NewTicker(0.01, fade, nil)
+--/run NeP.Interface:Alert("Hello World", 5)
+function NeP.Interface.Alert(_, txt, time)
+  time = time or 5
+	frame.text:SetText(txt)
+  frame:SetHeight(frame.text:GetHeight())
+	frame:SetAlpha(1)
+	frame:Show()
+  C_Timer.NewTicker(time/100, fade, nil)
 end
