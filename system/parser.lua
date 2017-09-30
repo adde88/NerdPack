@@ -113,8 +113,8 @@ function NeP.Parser:Nest_P(eval, nest_unit)
 	end
 end
 
--- POOLING PARSER (TARGET->COND->SPELL)
-function NeP.Parser:Pool_P(eval)
+-- POOLING PARSER (SPELL->TARGET->COND->POOL)
+function NeP.Parser.Pool_P(_,eval)
 	eval.spell = eval.spell or eval[1].spell
 	local dsl_res = NeP.DSL.Parse(eval[2], eval.spell, eval.target)
 	--dont wait for spells that failed Conditions
@@ -129,16 +129,14 @@ function NeP.Parser:Pool_P(eval)
 	elseif eval.stats
 	and not eval.master.halt
 	and dsl_res then
-		return NeP.Parser:Reg_P(eval, nil, true, true)
+		return NeP.Parser:Reg_P(eval, nil, true)
 	end
 end
 
 --REGULAR PARSER (SPELL->TARGET->COND)
-function NeP.Parser:Reg_P(eval, _, bypass_dsl, bypass_target)
-	
+function NeP.Parser.Reg_P(_, eval, _, bypass)
 	-- skip if comming from pooling
-	if not bypass_target 
-	and not bypass_dsl then
+	if not bypass then
 		eval.spell = eval.spell or eval[1].spell
 		if not NeP.DSL.Parse(eval[2], eval.spell, eval.target) then
 			return false
