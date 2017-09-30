@@ -4,8 +4,11 @@ NeP.Version = {
 	minor = 0010,
 	branch = "Dev"
 }
-NeP.Media   = 'Interface\\AddOns\\' .. n_name .. '\\Media\\'
-NeP.Color   = 'FFFFFF'
+NeP.Media = 'Interface\\AddOns\\' .. n_name .. '\\Media\\'
+NeP.Color = 'FFFFFF'
+NeP.Paypal = 'http://goo.gl/yrctPO'
+NeP.Patreon = 'https://www.patreon.com/mrthesoulz'
+NeP.Author = 'MrTheSoulz'
 
 -- This exports stuff into global space
 NeP.Globals = {}
@@ -22,6 +25,3 @@ function NeP.Wipe_Cache()
 		_G.wipe(v)
 	end
 end
-
--- Force lua erros on
-_G.SetCVar("scriptErrors", "1")

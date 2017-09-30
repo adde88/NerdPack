@@ -7,6 +7,8 @@ NeP.Debug.Profiles.total_usage = 0
 NeP.Debug.Profiles.total_average = 0
 
 _G.SetCVar("scriptProfile", NeP.Debug.Enable and "1" or "0")
+-- Force lua erros on
+_G.SetCVar("scriptErrors", "1")
 
 function NeP.Debug:Add(name, func, subroutines)
 	if not NeP.Debug.Enable then return end
