@@ -1,9 +1,10 @@
 local _, NeP = ...
+NeP.Compiler = {}
 local tonumber = tonumber
 local noop = function() end
-
-NeP.Compiler = {}
-
+local cond_types = {}
+local spell_types = {}
+local target_types = {}
 local tokens = {}
 
 -- DO NOT USE THIS UNLESS YOU KNOW WHAT YOUR DOING!
@@ -13,11 +14,9 @@ end
 
 local function spell_string(eval)
 	local ref = { spell = eval[1] }
-
 	--Arguments
 	ref.args = ref.spell:match('%((.+)%)')
 	ref.spell = ref.spell:gsub('%((.+)%)','')
-
 	NeP.Core:WhenInGame(function()
 		-- RegisterToken
 		local token = ref.spell:sub(1,1)
@@ -26,38 +25,39 @@ local function spell_string(eval)
 			tokens[token](eval, ref)
 			token = ref.spell:sub(1,1)
 		end
-
 		-- spell
 		if not eval.exe then
 			tokens["spell_cast"](eval, ref)
 		end
 	end, 99999)
-
 	--replace with compiled
 	eval[1] = ref
 end
 
-local _spell_types = {
-	['table'] = function(eval)
-		eval[1].is_table = true
-		eval[1].master = eval.master
-		eval[1].spell = "TABLEZZ"
-		NeP.Compiler.Compile(eval[1])
-	end,
-	['function'] = function(eval)
-		local ref = {}
-		ref.token = 'function'
-		ref.spell = tostring(eval[1])
-		eval.exe = eval[1]
-		eval.nogcd = true
-		eval[1] = ref
-	end,
-	['string'] = spell_string
-}
+local function spell_table(eval)
+	eval[1].is_table = true
+	eval[1].master = eval.master
+	eval[1].spell = "TABLEZZ"
+	NeP.Compiler:Compile(eval[1])
+end
+
+local function spell_func(eval)
+	local ref = {}
+	ref.token = 'function'
+	ref.spell = tostring(eval[1])
+	eval.exe = eval[1]
+	eval.nogcd = true
+	eval[1] = ref
+end
+
+-- Set Spells
+spell_types['table'] = spell_table
+spell_types['function'] = spell_func
+spell_types['string'] = spell_string
 
 -- Takes a valid format for spell and produces a table in its place
 function NeP.Compiler.Spell(eval)
-	local spell_type = _spell_types[type(eval[1])]
+	local spell_type = spell_types[type(eval[1])]
 	if spell_type then
 		spell_type(eval)
 	else
@@ -70,7 +70,7 @@ function NeP.Compiler.Spell(eval)
 	end
 end
 
-local function unit_ground(ref, eval)
+local function unit_ground(eval, ref)
 	if ref.target:find('.ground') then
 		ref.target = ref.target:sub(0,-8)
 		NeP.Core:WhenInGame(function()
@@ -86,22 +86,20 @@ local function unit_ground(ref, eval)
 	end
 end
 
-
-local _target_types = {
-	['nil'] = noop,
-	['table'] = noop,
-	['function'] = noop,
-	['string'] = function(eval, ref) unit_ground(ref, eval) end
-}
+-- Set Targets
+target_types['nil'] = noop
+target_types['table'] = noop
+target_types['function'] = noop
+target_types['string'] = unit_ground
 
 function NeP.Compiler.Target(eval)
-	local ref, unit_type = {}, _target_types[type(eval[3])]
+	local ref, unit_type = {}, target_types[type(eval[3])]
 	if unit_type then
 		ref.target = eval[3]
 		unit_type(eval, ref)
 	else
 		NeP.Core:Print('Found a issue compiling: ', eval.master.name, '\n-> Target cant be a', type(eval[3]))
-		_target_types['nil'](eval, ref)
+		target_types['nil'](eval, ref)
 	end
 	eval[3] = ref
 end
@@ -114,83 +112,72 @@ local function CondSpaces(cond)
 	end):gsub("%s", ""):gsub("_xspc_", " ")
 end
 
-function NeP.Compiler.Cond_Legacy_PE(cond)
+local function CondSpellLocale(str, cr_name)
+	return str:gsub("%((.-)%)", function(s)
+		-- we cant convert numbers due to it messing up other things
+		if tonumber(s) then return '('..s..')' end
+		return '('..NeP.Spells:Convert(s, cr_name)..')'
+	end)
+end
+
+local function CondFunc(eval)
+	local func = tostring(eval)
+	NeP.DSL.cust_funcs[func] = eval
+	return 'func='..func
+end
+
+local function Cond_Legacy_PE(cond, name)
 	local str = '{'
 	for k=1, #cond do
-		local tmp, tmp_type = cond[k], type(cond[k])
-		if not tmp then
-			str = 'true'
-		elseif tmp_type == 'table' then
-			str = NeP.Compiler.Cond_Legacy_PE(cond)
-		elseif tmp_type == 'boolean' then
-			str = tostring(tmp):lower()
-		elseif tmp_type == 'function' then
-			-- FIXME: this shouldnt go to globals we need a table with these
-			local name = tostring(tmp)
-			_G[name] = tmp
-			str = 'func='..name
-		elseif tmp:lower() == 'or' then
-			str = str .. '||' .. tmp
-		elseif k ~= 1 then
-			str = str .. '&' .. tmp
+		local tmp = cond[k]
+		local xtype = type(tmp)
+		--string
+		if xtype == "string" then
+			if tmp:lower() == 'or' then
+				str = str .. '||' .. tmp
+			elseif k ~= 1 then
+				str = str .. '&' .. tmp
+			else
+				str = str .. tmp
+			end
+		-- Others
 		else
-			str = str .. tmp
+			str = str .. '&' .. cond_types[xtype](tmp)
 		end
 	end
-	return str..'}'
+	return cond_types['string'](str..'}', name)
 end
 
-local _cond_types = {
-	['nil'] = function(eval)
-		eval[2] = 'true'
-	end,
-	['function'] = function(eval)
-		local _func_name = tostring(eval[2])
-		_G[_func_name] = eval[2]
-		eval[2] = 'func='.._func_name
-	end,
-	['boolean'] = function(eval)
-		eval[2] = tostring(eval[2])
-	end,
-	['string'] = function(eval)
-		-- Convert spells inside () and remove spaces
-		eval[2] = CondSpaces(eval[2]):gsub("%((.-)%)", function(s)
-			-- we cant convert numbers due to it messing up other things
-			if tonumber(s) then return '('..s..')' end
-			return '('..NeP.Spells:Convert(s, eval.master.name)..')'
-		end)
-	end,
-	['table'] = function(eval)
-		-- convert everything into a string so we can then process it
-		eval[2] = NeP.Compiler.Cond_Legacy_PE(eval[2])
-		NeP.Compiler.Conditions(eval)
-  end
-}
+cond_types['nil'] = function() return 'true' end
+cond_types['function'] = CondFunc
+cond_types['boolean'] = tostring
+cond_types['string'] = function(eval, name) return CondSpellLocale(CondSpaces(eval), name) end
+cond_types['table'] = Cond_Legacy_PE
 
 function NeP.Compiler.Conditions(eval)
-	local cond_type = _cond_types[type(eval[2])]
-	if cond_type then
-		cond_type(eval)
+	local cond = cond_types[type(eval[2])]
+	if cond then
+		eval[2] = cond(eval[2], eval.master.name)
 	else
 		NeP.Core:Print('Found a issue compiling: ', eval.master.name, '\n-> Condition cant be a', type(eval[2]))
-		_cond_types['nil'](eval)
+		eval[2] = cond_types['nil']()
 	end
 end
 
-function NeP.Compiler.Compile(eval)
+function NeP.Compiler:Compile(eval)
 	for i=1, #eval do
 		-- check if this was already done
 		if not eval[i][4] then
 			eval[i][4] = true
 			eval[i].master = eval.master
-			NeP.Compiler.Spell(eval[i])
-			NeP.Compiler.Target(eval[i])
-			NeP.Compiler.Conditions(eval[i])
+			self.Spell(eval[i])
+			self.Target(eval[i])
+			self.Conditions(eval[i])
 		end
 	end
 end
 
 function NeP.Compiler.Iterate(_, eval)
 	if not eval then return end
-	NeP.Compiler.Compile(eval)
+	NeP.Compiler:Compile(eval)
 end

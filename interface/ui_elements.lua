@@ -1,8 +1,7 @@
-local _, NeP          = ...
-local LibStub     = LibStub
-local strupper    = strupper
-local CreateFrame = CreateFrame
-local DiesalGUI   = LibStub('DiesalGUI-1.0')
+local _, NeP = ...
+local LibStub = _G.LibStub
+local CreateFrame = _G.CreateFrame
+local DiesalGUI = LibStub('DiesalGUI-1.0')
 local DiesalTools = LibStub('DiesalTools-1.0')
 local SharedMedia = LibStub('LibSharedMedia-3.0')
 
@@ -61,7 +60,7 @@ function NeP.Interface.Texture(_, element, parent, table)
 	return tmp
 end
 
-function NeP.Interface:Checkbox(element, parent, table)
+function NeP.Interface.Checkbox(_,element, parent, table)
 	local key = element.key_check or element.key
 	local default = element.default_check or element.default
 	local tmp = DiesalGUI:Create('CheckBox')
@@ -79,7 +78,7 @@ function NeP.Interface:Checkbox(element, parent, table)
 	return tmp
 end
 
-function NeP.Interface:Spinner(element, parent, table)
+function NeP.Interface.Spinner(_,element, parent, table)
 	local key = element.key_spin or element.key
 	local default = element.default_spin or element.default
 	local tmp = DiesalGUI:Create('Spinner')
@@ -126,7 +125,7 @@ function NeP.Interface:Checkspin(element, parent, table)
 	return tmp
 end
 
-function NeP.Interface:Combo(element, parent, table)
+function NeP.Interface.Combo(_,element, parent, table)
 	local tmp = DiesalGUI:Create('Dropdown')
 	parent:AddChild(tmp)
 	tmp:SetParent(parent.content)
@@ -166,7 +165,7 @@ function NeP.Interface:Button(element, parent, table)
 	return tmp
 end
 
-function NeP.Interface:Input(element, parent, table)
+function NeP.Interface.Input(_, element, parent, table)
 	local tmp = DiesalGUI:Create('Input')
 	parent:AddChild(tmp)
 	tmp:SetParent(parent.content)

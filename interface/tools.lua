@@ -1,13 +1,9 @@
 local _, NeP = ...
 NeP.Interface.usedGUIs = {}
-NeP.Globals.Interface = {}
-
--- Locals
-local LibStub = LibStub
-local unpack = unpack
+local LibStub = _G.LibStub
+local unpack = _G.unpack
 local DiesalGUI = LibStub("DiesalGUI-1.0")
 local element_space = 2
-
 function NeP.Interface.Noop() end
 
 local Elements = {
@@ -255,10 +251,3 @@ function NeP.Interface.Write(_, a, b, key)
 	local cprofile = NeP.Config:Read(a, 'selected_profile', 'default', 'settings')
 	NeP.Config:Write(a, b, key, cprofile)
 end
-
--- Gobals
-NeP.Globals.Interface = {
-	BuildGUI = NeP.Interface.BuildGUI,
-	Fetch = NeP.Interface.Fetch,
-	GetElement = NeP.Interface.GetElement
-}

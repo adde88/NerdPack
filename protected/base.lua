@@ -1,9 +1,14 @@
 local _, NeP = ...
+local _G = _G
+local strsplit = _G.strsplit
+local IsInGroup = _G.IsInGroup
+local IsInRaid = _G.IsInRaid
+local GetNumGroupMembers = _G.GetNumGroupMembers
 
 NeP.Protected = {}
 NeP.Protected.callbacks = {}
 
-local rangeCheck = LibStub("LibRangeCheck-2.0")
+local rangeCheck = _G.LibStub("LibRangeCheck-2.0")
 local noop = function() end
 
 function NeP.Protected:AddCallBack(func)
@@ -31,20 +36,19 @@ NeP.Protected.GameObjectIsAnimating = noop
 
 NeP.Protected.Distance = function(_, b)
   local minRange, maxRange = rangeCheck:GetRange(b)
-  return maxRange or minRange
+  return maxRange or minRange or 0
 end
 
 NeP.Protected.Infront = function(_,b)
-  return NeP.Helpers:Infront(b)
+  return NeP.Helpers:Infront(b) or false
 end
 
 NeP.Protected.UnitCombatRange = function(_,b)
-  local minRange = rangeCheck:GetRange(b)
-  return minRange
+  return rangeCheck:GetRange(b) or 0
 end
 
 NeP.Protected.LineOfSight = function(_,b)
-  return NeP.Helpers:Infront(b)
+  return NeP.Helpers:Infront(b) or false
 end
 
 local ValidUnits = {'player', 'mouseover', 'target', 'focus', 'pet',}
@@ -61,7 +65,7 @@ function NeP.Protected.nPlates:Insert(ref, Obj, GUID)
 		local ObjID = select(6, strsplit('-', GUID))
 		self[ref][GUID] = {
 			key = Obj,
-			name = UnitName(Obj),
+			name = _G.UnitName(Obj),
 			distance = distance,
 			id = tonumber(ObjID or 0),
 			guid = GUID,
@@ -72,7 +76,8 @@ end
 
 NeP.Protected.OM_Maker = function()
   -- If in Group scan frames...
-  if IsInGroup() or IsInRaid() then
+  if IsInGroup()
+	or IsInRaid() then
     local prefix = (IsInRaid() and 'raid') or 'party'
     for i = 1, GetNumGroupMembers() do
       local unit = prefix..i
@@ -100,9 +105,9 @@ NeP.Protected.OM_Maker = function()
   --nameplates
 	for i=1, 40 do
 		local Obj = 'nameplate'..i
-		if UnitExists(Obj) then
-			local GUID = UnitGUID(Obj) or '0'
-			if UnitIsFriend('player',Obj) then
+		if _G.UnitExists(Obj) then
+			local GUID = _G.UnitGUID(Obj) or '0'
+			if _G.UnitIsFriend('player',Obj) then
 				NeP.Protected.nPlates:Insert('Friendly', Obj, GUID)
 			else
 				NeP.Protected.nPlates:Insert('Enemy', Obj, GUID)
@@ -110,5 +115,3 @@ NeP.Protected.OM_Maker = function()
 		end
 	end
 end
-
-NeP.Globals.Protected = NeP.Protected

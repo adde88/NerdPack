@@ -31,6 +31,3 @@ function NeP.Spells.Convert(_, spell)
 	end
 	return spell
 end
-
---Export to global
-NeP.Globals.Spells = NeP.Spells

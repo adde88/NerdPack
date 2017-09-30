@@ -9,7 +9,6 @@ local LAD = _G.LibStub("LibArtifactData-1.0")
 --------------------------------------------------------------------------------------------------------------
 ]]
 NeP.Artifact = {}
-NeP.Globals.Artifact = NeP.Artifact
 
 function NeP.Artifact.Update()
     LAD.ForceUpdate()

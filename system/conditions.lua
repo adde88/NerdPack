@@ -21,6 +21,7 @@ local function _add(name, condition, overwrite)
 	name = name:lower()
 	if not conditions[name] or overwrite then
 		conditions[name] = condition
+		--NeP.Debug:Add(name, condition, true)
 	end
 end
 

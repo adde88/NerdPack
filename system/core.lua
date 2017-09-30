@@ -1,10 +1,8 @@
 local _, NeP = ...
 local _G = _G
 NeP.Core = {}
-NeP.Globals.Core = NeP.Core
 
 local last_print = ""
-
 function NeP.Core.Print(_, ...)
 	if last_print ~= ... then
 		last_print = ...

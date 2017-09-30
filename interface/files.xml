@@ -10,5 +10,7 @@
 	<Script file="default_toggles.lua" />
 	<Script file="om.lua" />
 	<Script file="actionlog.lua" />
+	<Script file="alert.lua" />
+	<Script file="splash.lua" />
 
 </Ui>

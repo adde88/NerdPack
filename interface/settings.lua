@@ -1,5 +1,6 @@
 local n_name, NeP = ...
-local L           = function(val) return NeP.Locale:TA('Settings', val) end
+local L = function(val) return NeP.Locale:TA('Settings', val) end
+local NeP_ver = tostring(NeP.Version.major.."."..NeP.Version.minor.."-"..NeP.Version.branch)
 
 function NeP.Interface:Update()
   NeP.ButtonsSize = NeP.Interface:Fetch(n_name..'_Settings', 'bsize', 40)
@@ -16,7 +17,7 @@ title = n_name,
   height = 270,
   config = {
 		{ type = 'header', text = n_name, size = 24, align = 'Center'},
-    { type = 'text', text = NeP.Version..' '..NeP.Branch, size = 18, align = 'Center'},
+    { type = 'text', text = NeP_ver, size = 18, align = 'Center'},
 
     { type = 'spacer' },{ type = 'ruler' },{ type = 'spacer' },
     { type = 'header', text = L('UI_Settings') },

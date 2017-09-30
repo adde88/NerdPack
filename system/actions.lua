@@ -1,6 +1,5 @@
 local _, NeP = ...
 NeP.Actions = {}
-NeP.Globals.Actions = NeP.Actions
 
 local _actions = {}
 local noop = function() end

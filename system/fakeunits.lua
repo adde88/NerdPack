@@ -1,7 +1,5 @@
 local _, NeP = ...
-
 NeP.FakeUnits = {}
-NeP.Globals.FakeUnits = NeP.FakeUnits
 local Units = {}
 
 local function _add(name, func)
