@@ -15,10 +15,10 @@ frame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",
 	insets = { left = 4, right = 4, top = 4, bottom = 4 }
 });
 frame:SetBackdropColor(0,0,0,1);
-frame.texture = frame:Createtexture()
+frame.texture = frame:CreateTexture()
 frame.texture:SetPoint("LEFT",-4,0)
 frame.texture:SetSize(100,100)
-frame.text = frame:CreateFontString(nil, "BACKGROUND", "PVPInfoframe.textFont");
+frame.text = frame:CreateFontString(nil, "BACKGROUND", "MovieSubtitleFont");
 frame.text:SetPoint("RIGHT",-4,0)
 frame:Hide()
 
