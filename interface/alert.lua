@@ -28,7 +28,7 @@ end
 function NeP.Interface.Alert(_, txt, time)
   time = time or 5
 	frame.text:SetText(txt)
-  frame:SetHeight(frame.text:GetHeight())
+  frame:SetHeight(frame.text:GetStringHeight())
 	frame:SetAlpha(1)
 	frame:Show()
   C_Timer.NewTicker(time/100, fade, nil)

@@ -42,7 +42,8 @@ g.Interface = {
 	Add = NeP.Interface.Add,
 	toggleToggle = NeP.Interface.toggleToggle,
 	AddToggle = NeP.Interface.AddToggle,
-	Alert = NeP.Interface.Alert
+	Alert = NeP.Interface.Alert,
+	Splash = NeP.Interface.Splash
 }
 g.ActionLog = {
 	Add = NeP.ActionLog.Add,
