@@ -20,7 +20,6 @@ local function fade(self)
   if Alpha<=0 then
     frame:Hide()
     self:Cancel()
-    print("killed")
   end
 end
 
