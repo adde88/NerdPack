@@ -1,12 +1,12 @@
 local n_name, NeP = ...
 NeP.Version = {
 	major = 1,
-	minor = 0010,
+	minor = 0011,
 	branch = "RELEASE"
 }
 NeP.Media = 'Interface\\AddOns\\' .. n_name .. '\\Media\\'
 NeP.Color = 'FFFFFF'
-NeP.Paypal = 'http://goo.gl/yrctPO'
+NeP.Paypal = 'https://www.paypal.me/JaimeMarques/25'
 NeP.Patreon = 'https://www.patreon.com/mrthesoulz'
 NeP.Author = 'MrTheSoulz'
 

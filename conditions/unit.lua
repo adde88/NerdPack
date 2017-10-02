@@ -93,7 +93,7 @@ NeP.DSL:Register('dead', function (target)
 end)
 
 NeP.DSL:Register('alive', function(target)
-  return _G.UnitExists(target) and not _G.UnitIsDeadOrGhost(target)
+  return not _G.UnitIsDeadOrGhost(target)
 end)
 
 NeP.DSL:Register('behind', function(target)
@@ -157,11 +157,11 @@ NeP.DSL:Register('movingfor', function(target)
 end)
 
 NeP.DSL:Register('friend', function(target)
-  return _G.UnitExists(target) and not _G.UnitCanAttack('player', target)
+  return not _G.UnitCanAttack('player', target)
 end)
 
 NeP.DSL:Register('enemy', function(target)
-  return _G.UnitExists(target) and _G.UnitCanAttack('player', target)
+  return _G.UnitCanAttack('player', target)
 end)
 
 NeP.DSL:Register({'distance', 'range'}, function(unit)
@@ -191,7 +191,7 @@ NeP.DSL:Register('role', function(target, role)
 end)
 
 NeP.DSL:Register('name', function (target, expectedName)
-  return _G.UnitExists(target) and _G.UnitName(target):lower():find(expectedName:lower()) ~= nil
+  return _G.UnitName(target):lower():find(expectedName:lower()) ~= nil
 end)
 
 NeP.DSL:Register('creatureType', function (target, expectedType)
